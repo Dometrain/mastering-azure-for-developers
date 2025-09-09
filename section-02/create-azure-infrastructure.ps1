@@ -4,13 +4,13 @@ param(
     [string]$Region = "westeurope",
     [string]$RegionShort = "we",    
     [string]$FunctionalGroup = "ti", # ti for TravelInspiration
-    [string]$UniqueIdentifier = "i8e5n2",  # Optional parameter
+    [string]$UniqueIdentifier = "i68e3",  # Optional parameter
     [string]$PublisherName = "Marvin", # Used for APIM, replace with your own
     [string]$PublisherEmail = "kevin.dockx@gmail.com", # Used for APIM, replace with your own
     [string]$SqlAdminUser = "kevin", # Used for SQL access, optionally replace this    
     [string]$SqlAdminPassword = "HRZc8atfjZbrkb2", # Used for SQL access, optionally replace this
-    [string]$EntraAdminDisplayName = "Kevin Dockx", # Replace with your own Entra ID display name
-    [string]$EntraAdminObjectId = "b2ff641c-5c76-4469-9c28-35f5e7c51ce1" # Replace with your own Entra ID user object identifier
+    [string]$EntraAdminDisplayName = "INPUT-YOUR-OWN", # Replace with your own Entra ID display name
+    [string]$EntraAdminObjectId = "INPUT-YOUR-OWN" # Replace with your own Entra ID user object identifier
 )
 
 # Function to check if resource group exists
