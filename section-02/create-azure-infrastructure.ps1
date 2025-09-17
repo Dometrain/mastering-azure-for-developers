@@ -5,8 +5,8 @@ param(
     [string]$RegionShort = "we",    
     [string]$FunctionalGroup = "ti", # ti for TravelInspiration
     [string]$UniqueIdentifier = "i68e3",  # Optional parameter
-    [string]$PublisherName = "Marvin", # Used for APIM, replace with your own
-    [string]$PublisherEmail = "kevin.dockx@gmail.com", # Used for APIM, replace with your own
+    [string]$PublisherName = "INPUT-YOUR-OWN", # Used for APIM, replace with your own
+    [string]$PublisherEmail = "INPUT-YOUR-OWN", # Used for APIM, replace with your own
     [string]$SqlAdminUser = "kevin", # Used for SQL access, optionally replace this    
     [string]$SqlAdminPassword = "HRZc8atfjZbrkb2", # Used for SQL access, optionally replace this
     [string]$EntraAdminDisplayName = "INPUT-YOUR-OWN", # Replace with your own Entra ID display name
