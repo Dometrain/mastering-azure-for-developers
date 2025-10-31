@@ -1,6 +1,4 @@
-﻿using Azure;
-using Azure.Core;
-using FluentValidation;
+﻿using FluentValidation;
 using MediatR;
 
 namespace TravelInspiration.API.Destinations.Shared.Behaviours;
@@ -16,7 +14,7 @@ public class ModelValidationBehaviour<TRequest, IResult>
     {
         if (!_validators.Any())
         {
-            return await next();
+            return await next(cancellationToken);
         }
 
         var context = new ValidationContext<TRequest>(request);
@@ -41,6 +39,6 @@ public class ModelValidationBehaviour<TRequest, IResult>
             return (IResult)Results.ValidationProblem(validationProblemsDictionary);
         }
 
-        return await next();
+        return await next(cancellationToken);
     }
 }

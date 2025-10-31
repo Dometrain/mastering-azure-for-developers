@@ -1,0 +1,32 @@
+﻿@model List<TravelInspiration.Client.Web.Models.Dto.DestinationDto>
+
+@{
+    ViewData["Title"] = "Search Destinations";
+}
+
+<h1>Search Destinations</h1>
+
+<form asp-action="SearchDestinations" method="post">
+    <div class="mb-3">
+        <input type="text" class="form-control" id="searchFor" name="searchFor" placeholder="Search for..." />
+    </div>
+    <button type="submit" class="btn btn-primary">Search Destinations</button>
+</form>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Name</th> 
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var destination in Model)
+        {
+            <tr>
+                <td>@destination.Id</td>
+                <td>@destination.Name</td>
+            </tr>
+        }
+    </tbody>
+</table>

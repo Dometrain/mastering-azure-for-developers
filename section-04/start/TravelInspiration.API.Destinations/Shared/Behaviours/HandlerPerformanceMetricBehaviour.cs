@@ -1,5 +1,4 @@
-﻿using Azure.Core;
-using MediatR;
+﻿using MediatR;
 using System.Diagnostics;
 using TravelInspiration.API.Destinations.Shared.Metrics;
 
@@ -18,7 +17,7 @@ public sealed class HandlerPerformanceMetricBehaviour<TRequest, TResponse>(
         CancellationToken cancellationToken)
     {
         _timer.Start();
-        var response = await next();
+        var response = await next(cancellationToken);
         _timer.Stop();
 
         _handlerPerformanceMetric.MilliSecondsElapsed(

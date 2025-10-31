@@ -8,8 +8,5 @@
         "excludedTypes": "Request"
       }
     }
-  },
-  "sdk": {
-    "version": "8.0.201"
-  }
+  } 
 }

@@ -1,4 +1,3 @@
-using Azure.Identity;
 using TravelInspiration.API.Destinations;
 using TravelInspiration.API.Destinations.Shared.Slices;
 
@@ -10,11 +9,6 @@ builder.Services.AddHttpClient();
 builder.Services.AddHttpContextAccessor();
 
 builder.Services.RegisterApplicationServices();
-
-builder.Services.Configure<Microsoft.ApplicationInsights.Extensibility.TelemetryConfiguration>(config =>
-{
-    config.SetAzureTokenCredential(new DefaultAzureCredential());
-});
 
 builder.Services.AddApplicationInsightsTelemetry(new Microsoft.ApplicationInsights.AspNetCore.Extensions.ApplicationInsightsServiceOptions
 {
