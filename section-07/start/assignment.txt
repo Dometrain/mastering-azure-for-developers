@@ -1,0 +1,5 @@
+{
+"principalId": "2adebe45-cbc3-4283-9dac-41a4ae5b0d04",
+"resourceId": "877cdbcb-032c-4e76-b0e4-da376d8a9213",
+"appRoleId": "cf8aba2e-7f99-44e9-a4ee-32e726f22978"
+}
