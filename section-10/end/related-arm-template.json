@@ -1,0 +1,52 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.39.26.7824",
+      "templateHash": "13339793798094690645"
+    }
+  },
+  "parameters": {
+    "webapp_name": {
+      "type": "string",
+      "defaultValue": "appdev-app-dev-we-ticlient-i9e5m2-new-willbeoverridden",
+      "metadata": {
+        "description": "The name of the web app"
+      }
+    },
+    "webapp_location": {
+      "type": "string",
+      "defaultValue": "West Europe",
+      "metadata": {
+        "description": "The location of the web app"
+      }
+    },
+    "webapp_plan_serverfarm_externalid": {
+      "type": "string",
+      "defaultValue": "/subscriptions/979324e5-17ea-450e-bed2-26d05ec4d43e/resourceGroups/appdev-rg-dev-we-ti-i9e5m2/providers/Microsoft.Web/serverfarms/appdev-plan-dev-we-ti-i9e5m2",
+      "metadata": {
+        "description": "The resource ID of the app service plan"
+      }
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Web/sites",
+      "apiVersion": "2023-01-01",
+      "name": "[parameters('webapp_name')]",
+      "location": "[parameters('webapp_location')]",
+      "kind": "app",
+      "properties": {
+        "serverFarmId": "[parameters('webapp_plan_serverfarm_externalid')]",
+        "httpsOnly": true,
+        "siteConfig": {
+          "minTlsVersion": "1.2",
+          "ftpsState": "Disabled",
+          "netFrameworkVersion": "v9.0"
+        }
+      }
+    }
+  ]
+}

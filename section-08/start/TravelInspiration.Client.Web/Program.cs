@@ -73,7 +73,7 @@ builder.Services.AddAuthentication(options =>
         throw new InvalidOperationException("Missing configuration value EntraIdConfiguration:Authority");
     options.ClientId = builder.Configuration["EntraIdConfiguration:ClientId"] ??
         throw new InvalidOperationException("Missing configuration value EntraIdConfiguration:ClientId");
-    options.ClientSecret = options.ClientSecret = builder.Configuration["EntraIdConfiguration:ClientSecret"] ??
+    options.ClientSecret = builder.Configuration["EntraIdConfiguration:ClientSecret"] ??
         throw new InvalidOperationException("Missing configuration value EntraIdConfiguration:ClientSecret");
     options.ResponseType = "code";
     options.SaveTokens = true;

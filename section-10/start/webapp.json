@@ -1,0 +1,22 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "resources": [
+    {
+      "type": "Microsoft.Web/sites",
+      "apiVersion": "2023-01-01",
+      "name": "appdev-app-dev-we-ticlient-i9e5m2-new",
+      "location": "West Europe",
+      "kind": "app",
+      "properties": {
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', '/subscriptions/979324e5-17ea-450e-bed2-26d05ec4d43e/resourceGroups/appdev-rg-dev-we-ti-i9e5m2/providers/Microsoft.Web/serverfarms/appdev-plan-dev-we-ti-i9e5m2')]",
+        "httpsOnly": true,
+        "siteConfig": {
+          "minTlsVersion": "1.2",
+          "ftpsState": "Disabled",
+          "netFrameworkVersion": "v9.0"
+        }
+      }
+    }
+  ]
+}

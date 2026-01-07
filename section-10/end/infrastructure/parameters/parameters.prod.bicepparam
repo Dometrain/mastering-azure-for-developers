@@ -1,0 +1,10 @@
+using '../main.bicep'
+
+param department = 'appdev'
+param env = 'prod'
+param location = 'westeurope'
+param itinerariesFunctionAppName = 'itindemo8d9lm'
+param storageAccountName = 'itindemo8d9lmsa'
+param hostingPlanName = 'itindemo8d9lm-plan'
+param functionHostingPlanTier = 'FlexConsumption'
+param resourceGroupName = 'moduledemo' 

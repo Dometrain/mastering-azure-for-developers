@@ -1,0 +1,273 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "sites_appdev_app_dev_we_ticlient_i9e5m2_name": {
+      "defaultValue": "appdev-app-dev-we-ticlient-i9e5m2",
+      "type": "String"
+    },
+    "serverfarms_appdev_plan_dev_we_ti_i9e5m2_externalid": {
+      "defaultValue": "/subscriptions/979324e5-17ea-450e-bed2-26d05ec4d43e/resourceGroups/appdev-rg-dev-we-ti-i9e5m2/providers/Microsoft.Web/serverfarms/appdev-plan-dev-we-ti-i9e5m2",
+      "type": "String"
+    }
+  },
+  "variables": {},
+  "resources": [
+    {
+      "type": "Microsoft.Web/sites",
+      "apiVersion": "2024-11-01",
+      "name": "[parameters('sites_appdev_app_dev_we_ticlient_i9e5m2_name')]",
+      "location": "West Europe",
+      "kind": "app",
+      "identity": {
+        "type": "SystemAssigned"
+      },
+      "properties": {
+        "enabled": true,
+        "hostNameSslStates": [
+          {
+            "name": "[concat(parameters('sites_appdev_app_dev_we_ticlient_i9e5m2_name'), '.azurewebsites.net')]",
+            "sslState": "Disabled",
+            "hostType": "Standard"
+          },
+          {
+            "name": "[concat(parameters('sites_appdev_app_dev_we_ticlient_i9e5m2_name'), '.scm.azurewebsites.net')]",
+            "sslState": "Disabled",
+            "hostType": "Repository"
+          }
+        ],
+        "serverFarmId": "[parameters('serverfarms_appdev_plan_dev_we_ti_i9e5m2_externalid')]",
+        "reserved": false,
+        "isXenon": false,
+        "hyperV": false,
+        "dnsConfiguration": {},
+        "outboundVnetRouting": {
+          "allTraffic": false,
+          "applicationTraffic": false,
+          "contentShareTraffic": false,
+          "imagePullTraffic": false,
+          "backupRestoreTraffic": false
+        },
+        "siteConfig": {
+          "numberOfWorkers": 1,
+          "acrUseManagedIdentityCreds": false,
+          "alwaysOn": false,
+          "http20Enabled": true,
+          "functionAppScaleLimit": 0,
+          "minimumElasticInstanceCount": 0
+        },
+        "scmSiteAlsoStopped": false,
+        "clientAffinityEnabled": true,
+        "clientAffinityProxyEnabled": false,
+        "clientCertEnabled": false,
+        "clientCertMode": "Required",
+        "hostNamesDisabled": false,
+        "ipMode": "IPv4",
+        "customDomainVerificationId": "29863D51F50BE6BB2C92B55BC70D0592C0E958F7B463556176F4D948F1589CEA",
+        "containerSize": 0,
+        "dailyMemoryTimeQuota": 0,
+        "httpsOnly": false,
+        "endToEndEncryptionEnabled": false,
+        "redundancyMode": "None",
+        "publicNetworkAccess": "Enabled",
+        "storageAccountRequired": false,
+        "keyVaultReferenceIdentity": "SystemAssigned"
+      }
+    },
+    {
+      "type": "Microsoft.Web/sites/basicPublishingCredentialsPolicies",
+      "apiVersion": "2024-11-01",
+      "name": "[concat(parameters('sites_appdev_app_dev_we_ticlient_i9e5m2_name'), '/ftp')]",
+      "location": "West Europe",
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/sites', parameters('sites_appdev_app_dev_we_ticlient_i9e5m2_name'))]"
+      ],
+      "properties": {
+        "allow": false
+      }
+    },
+    {
+      "type": "Microsoft.Web/sites/basicPublishingCredentialsPolicies",
+      "apiVersion": "2024-11-01",
+      "name": "[concat(parameters('sites_appdev_app_dev_we_ticlient_i9e5m2_name'), '/scm')]",
+      "location": "West Europe",
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/sites', parameters('sites_appdev_app_dev_we_ticlient_i9e5m2_name'))]"
+      ],
+      "properties": {
+        "allow": false
+      }
+    },
+    {
+      "type": "Microsoft.Web/sites/config",
+      "apiVersion": "2024-11-01",
+      "name": "[concat(parameters('sites_appdev_app_dev_we_ticlient_i9e5m2_name'), '/web')]",
+      "location": "West Europe",
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/sites', parameters('sites_appdev_app_dev_we_ticlient_i9e5m2_name'))]"
+      ],
+      "properties": {
+        "numberOfWorkers": 1,
+        "defaultDocuments": [
+          "Default.htm",
+          "Default.html",
+          "Default.asp",
+          "index.htm",
+          "index.html",
+          "iisstart.htm",
+          "default.aspx",
+          "index.php",
+          "hostingstart.html"
+        ],
+        "netFrameworkVersion": "v9.0",
+        "phpVersion": "5.6",
+        "requestTracingEnabled": false,
+        "remoteDebuggingEnabled": false,
+        "httpLoggingEnabled": false,
+        "acrUseManagedIdentityCreds": false,
+        "logsDirectorySizeLimit": 35,
+        "detailedErrorLoggingEnabled": false,
+        "publishingUsername": "REDACTED",
+        "scmType": "None",
+        "use32BitWorkerProcess": true,
+        "webSocketsEnabled": false,
+        "alwaysOn": false,
+        "managedPipelineMode": "Integrated",
+        "virtualApplications": [
+          {
+            "virtualPath": "/",
+            "physicalPath": "site\\wwwroot",
+            "preloadEnabled": false
+          }
+        ],
+        "loadBalancing": "LeastRequests",
+        "experiments": {
+          "rampUpRules": []
+        },
+        "autoHealEnabled": false,
+        "vnetRouteAllEnabled": false,
+        "vnetPrivatePortsCount": 0,
+        "localMySqlEnabled": false,
+        "managedServiceIdentityId": 106890,
+        "ipSecurityRestrictions": [
+          {
+            "ipAddress": "Any",
+            "action": "Allow",
+            "priority": 2147483647,
+            "name": "Allow all",
+            "description": "Allow all access"
+          }
+        ],
+        "scmIpSecurityRestrictions": [
+          {
+            "ipAddress": "Any",
+            "action": "Allow",
+            "priority": 2147483647,
+            "name": "Allow all",
+            "description": "Allow all access"
+          }
+        ],
+        "scmIpSecurityRestrictionsUseMain": false,
+        "http20Enabled": true,
+        "minTlsVersion": "1.2",
+        "scmMinTlsVersion": "1.2",
+        "ftpsState": "FtpsOnly",
+        "preWarmedInstanceCount": 0,
+        "elasticWebAppScaleLimit": 0,
+        "functionsRuntimeScaleMonitoringEnabled": false,
+        "minimumElasticInstanceCount": 0,
+        "azureStorageAccounts": {},
+        "http20ProxyFlag": 0
+      }
+    },
+    {
+      "type": "Microsoft.Web/sites/deployments",
+      "apiVersion": "2024-11-01",
+      "name": "[concat(parameters('sites_appdev_app_dev_we_ticlient_i9e5m2_name'), '/13f0c411314a48d4b744bd19148a8cd8')]",
+      "location": "West Europe",
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/sites', parameters('sites_appdev_app_dev_we_ticlient_i9e5m2_name'))]"
+      ],
+      "properties": {
+        "status": 4,
+        "author_email": "N/A",
+        "author": "N/A",
+        "deployer": "OneDeploy",
+        "message": "OneDeploy",
+        "start_time": "2025-12-19T14:53:51.2886669Z",
+        "end_time": "2025-12-19T14:54:04.4662627Z",
+        "active": true
+      }
+    },
+    {
+      "type": "Microsoft.Web/sites/deployments",
+      "apiVersion": "2024-11-01",
+      "name": "[concat(parameters('sites_appdev_app_dev_we_ticlient_i9e5m2_name'), '/495885676cbb41ef85eb000bb3a7aed3')]",
+      "location": "West Europe",
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/sites', parameters('sites_appdev_app_dev_we_ticlient_i9e5m2_name'))]"
+      ],
+      "properties": {
+        "status": 4,
+        "author_email": "N/A",
+        "author": "N/A",
+        "deployer": "OneDeploy",
+        "message": "OneDeploy",
+        "start_time": "2025-12-18T10:15:48.307836Z",
+        "end_time": "2025-12-18T10:16:10.8062387Z",
+        "active": false
+      }
+    },
+    {
+      "type": "Microsoft.Web/sites/deployments",
+      "apiVersion": "2024-11-01",
+      "name": "[concat(parameters('sites_appdev_app_dev_we_ticlient_i9e5m2_name'), '/71a2258c915a43b3ab3e88b9f63f912d')]",
+      "location": "West Europe",
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/sites', parameters('sites_appdev_app_dev_we_ticlient_i9e5m2_name'))]"
+      ],
+      "properties": {
+        "status": 4,
+        "author_email": "N/A",
+        "author": "N/A",
+        "deployer": "OneDeploy",
+        "message": "OneDeploy",
+        "start_time": "2025-12-12T10:37:28.6915007Z",
+        "end_time": "2025-12-12T10:38:00.328473Z",
+        "active": false
+      }
+    },
+    {
+      "type": "Microsoft.Web/sites/deployments",
+      "apiVersion": "2024-11-01",
+      "name": "[concat(parameters('sites_appdev_app_dev_we_ticlient_i9e5m2_name'), '/84eb45de333a47ff86f8a964de524e1f')]",
+      "location": "West Europe",
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/sites', parameters('sites_appdev_app_dev_we_ticlient_i9e5m2_name'))]"
+      ],
+      "properties": {
+        "status": 4,
+        "author_email": "N/A",
+        "author": "N/A",
+        "deployer": "OneDeploy",
+        "message": "OneDeploy",
+        "start_time": "2025-12-19T13:06:46.8812208Z",
+        "end_time": "2025-12-19T13:06:54.2770227Z",
+        "active": false
+      }
+    },
+    {
+      "type": "Microsoft.Web/sites/hostNameBindings",
+      "apiVersion": "2024-11-01",
+      "name": "[concat(parameters('sites_appdev_app_dev_we_ticlient_i9e5m2_name'), '/', parameters('sites_appdev_app_dev_we_ticlient_i9e5m2_name'), '.azurewebsites.net')]",
+      "location": "West Europe",
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/sites', parameters('sites_appdev_app_dev_we_ticlient_i9e5m2_name'))]"
+      ],
+      "properties": {
+        "siteName": "appdev-app-dev-we-ticlient-i9e5m2",
+        "hostNameType": "Verified"
+      }
+    }
+  ]
+}
