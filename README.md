@@ -4,3 +4,7 @@ Starter files and fully finished sample solutions for my Mastering: Azure for De
 Enjoy! 
 
 Kevin.
+
+Personal branding site variants:
+- Light theme: `personal-branding-site-light/index.html`
+- Dark theme: `personal-branding-site-dark/index.html`

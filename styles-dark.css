@@ -1,0 +1,44 @@
+:root {
+  color-scheme: dark;
+  --bg: #0e1117;
+  --surface: #161b22;
+  --text: #e6edf3;
+  --accent: #58a6ff;
+}
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: radial-gradient(circle at top, #1f2733 0%, var(--bg) 45%);
+  color: var(--text);
+  line-height: 1.6;
+}
+
+.hero,
+main {
+  max-width: 860px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+.hero-image {
+  width: 100%;
+  max-height: 420px;
+  object-fit: cover;
+  border-radius: 0.75rem;
+  filter: contrast(1.08) saturate(0.9);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.55);
+}
+
+h1,
+h2 {
+  color: var(--accent);
+}
+
+section {
+  background: var(--surface);
+  border: 1px solid #30363d;
+  border-radius: 0.75rem;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1rem;
+}
