@@ -70,7 +70,6 @@ This takes several minutes. The script will output an **Application Insights con
 | | API Management (Developer tier) | `appdev-apim-dev-we[-suffix]` |
 | `appdev-rg-dev-we-ti[-suffix]` | App Service Plan (B1) | `appdev-plan-dev-we-ti[-suffix]` |
 | | Web App — Client | `appdev-app-dev-we-ticlient[-suffix]` |
-| | Web App — JS Client | `appdev-app-dev-we-ticlientjs[-suffix]` |
 | | Web App — Destinations API | `appdev-app-dev-we-tidestapi[-suffix]` |
 | | Storage Account | `appdevstdevweti[suffix]` |
 | | Function App — Itineraries API | `appdev-func-dev-we-tiitinapi[-suffix]` |
