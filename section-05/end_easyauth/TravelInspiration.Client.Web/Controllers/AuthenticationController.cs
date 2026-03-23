@@ -5,7 +5,7 @@ using TravelInspiration.Client.Web.Services;
 
 namespace TravelInspiration.Client.Web.Controllers;
 
-public class AuthenticationController(ILogger<AuthenticationController> logger, 
+public class AuthenticationController(ILogger<AuthenticationController> logger,
     IEasyAuthProvider easyAuthProvider) : Controller
 {
     private readonly ILogger<AuthenticationController> _logger = logger;
@@ -18,7 +18,7 @@ public class AuthenticationController(ILogger<AuthenticationController> logger,
 
     public IActionResult EasyAuthData()
     {
-        // for demo purposes only
+        // for demo purposes only, don't expose tokens like this in production code!
         var returnValue = new
         {
             // Identity headers
@@ -26,16 +26,20 @@ public class AuthenticationController(ILogger<AuthenticationController> logger,
             _easyAuthProvider.ClientPrincipalId,
             _easyAuthProvider.ClientPrincipalName,
             _easyAuthProvider.ClientPrincipalIdp,
-            // Helper properties
-            _easyAuthProvider.IsAuthenticated,
-            // Parsed client principal data
-            _easyAuthProvider.RawClientPrincipalData,
-            _easyAuthProvider.ClientPrincipalData,
+
             // Token headers
             _easyAuthProvider.IdToken,
             _easyAuthProvider.AccessToken,
             _easyAuthProvider.ExpiresOn,
             _easyAuthProvider.RefreshToken,
+
+            // Helper properties
+            _easyAuthProvider.IsAuthenticated,
+
+            // Parsed client principal data
+            _easyAuthProvider.RawClientPrincipalData,
+            _easyAuthProvider.ClientPrincipalData
+
         };
 
         return Ok(returnValue);
@@ -54,11 +58,11 @@ public class AuthenticationController(ILogger<AuthenticationController> logger,
                 RefreshToken = await HttpContext.GetTokenAsync("refresh_token"),
             };
         return Ok(returnValue);
-    } 
+    }
 
+    [Authorize]
     public IActionResult Logout()
     {
-        // /.auth/logout?post_logout_redirect_uri=...
         var postLogoutRedirectUri = Url.Action("Index",
             "Home",
             null);

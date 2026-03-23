@@ -9,5 +9,4 @@ public class EasyAuthClaim
 
     [JsonPropertyName("val")]
     public string Value { get; set; } = string.Empty;
-
 }

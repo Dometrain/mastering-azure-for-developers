@@ -15,5 +15,4 @@ public class EasyAuthClientPrincipal
 
     [JsonPropertyName("role_typ")]
     public string? RoleClaimType { get; set; }
-
 }

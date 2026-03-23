@@ -1,35 +1,29 @@
-using Duende.AccessTokenManagement.OpenIdConnect;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.Identity.Web;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-builder.Services.AddOpenIdConnectAccessTokenManagement();
+builder.Services.AddMicrosoftIdentityWebAppAuthentication(builder.Configuration, "EntraId")
+   .EnableTokenAcquisitionToCallDownstreamApi()
+   .AddInMemoryTokenCaches();
 
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
-}).AddCookie(CookieAuthenticationDefaults.AuthenticationScheme)
-.AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, options =>
-{
-    options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-    options.Authority = builder.Configuration["EntraIdConfiguration:Authority"] ??
-        throw new InvalidOperationException("Missing configuration value EntraIdConfiguration:Authority");
-    options.ClientId = builder.Configuration["EntraIdConfiguration:ClientId"] ??
-        throw new InvalidOperationException("Missing configuration value EntraIdConfiguration:ClientId");
-    options.ClientSecret = builder.Configuration["EntraIdConfiguration:ClientSecret"] ??
-        throw new InvalidOperationException("Missing configuration value EntraIdConfiguration:ClientSecret");
-    options.ResponseType = "code";
-    options.SaveTokens = true;
-    options.MapInboundClaims = false;  
-    options.TokenValidationParameters.NameClaimType = "name";
-    options.TokenValidationParameters.RoleClaimType = "role";
-});
-
-var app = builder.Build();
+builder.Services.Configure<OpenIdConnectOptions>(OpenIdConnectDefaults.AuthenticationScheme,
+    options =>
+    {
+        var nameClaimType = builder.Configuration["EntraId:TokenValidationParameters:NameClaimType"];
+        var roleClaimType = builder.Configuration["EntraId:TokenValidationParameters:RoleClaimType"];
+        if (!string.IsNullOrEmpty(nameClaimType))
+        {
+            options.TokenValidationParameters.NameClaimType = nameClaimType;
+        }
+        if (!string.IsNullOrEmpty(roleClaimType))
+        {
+            options.TokenValidationParameters.RoleClaimType = roleClaimType;
+        }
+    });
+var app = builder.Build(); 
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

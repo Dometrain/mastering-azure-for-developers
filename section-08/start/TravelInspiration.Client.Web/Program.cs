@@ -1,89 +1,47 @@
-using Duende.AccessTokenManagement;
-using Duende.AccessTokenManagement.OpenIdConnect;
-using Duende.IdentityModel.Client;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.Extensions.Options;
-using TravelInspiration.Client.Web.ConfigureOptions;
+using Microsoft.Identity.Web;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-builder.Services.AddClientCredentialsTokenManagement();
+builder.Services.AddMicrosoftIdentityWebAppAuthentication(builder.Configuration,
+        "EntraId")
+    .EnableTokenAcquisitionToCallDownstreamApi(
+         builder.Configuration.GetSection("ItinerariesApi:UserBasedScopes").Get<string[]>())
+    .AddInMemoryTokenCaches();
 
-builder.Services.AddSingleton(new DiscoveryCache(
-    builder.Configuration["EntraIdConfiguration:Authority"] ??
-        throw new InvalidOperationException("Missing configuration value EntraIdConfiguration:Authority"),
-    new DiscoveryPolicy { ValidateEndpoints = false }));
-
-builder.Services.AddSingleton<IConfigureOptions<ClientCredentialsClient>, 
-    ClientCredentialsClientConfigureOptions>();
-
-builder.Services.AddClientCredentialsHttpClient("DestinationsApiClient", 
-    ClientCredentialsClientName.Parse("DestinationsClientCredentialsFlow"), client =>
-    {
-        client.BaseAddress = new Uri(builder.Configuration["DestinationsApiRoot"] ??
-             throw new InvalidOperationException("Missing configuration value: DestinationsApiRoot"));
-    });
-
-//builder.Services.AddClientCredentialsHttpClient("ItinerariesApiClient",
-//    ClientCredentialsClientName.Parse("ItinerariesClientCredentialsFlow"), client =>
-//    {
-//        client.BaseAddress = new Uri(builder.Configuration["ItinerariesApiRoot"] ??
-//             throw new InvalidOperationException("Missing configuration value: ItinerariesApiRoot"));
-//    });
-
-//builder.Services.AddHttpClient("DestinationsApiClient", config =>
-//{
-//    config.BaseAddress = new Uri(builder.Configuration["DestinationsApiRoot"] ??
-//        throw new InvalidOperationException("Missing configuration value: DestinationsApiRoot"));
-//});
-
-//builder.Services.AddHttpClient("ItinerariesApiClient", config =>
-//{
-//    config.BaseAddress = new Uri(builder.Configuration["ItinerariesApiRoot"] ??
-//        throw new InvalidOperationException("Missing configuration value: ItinerariesApiRoot"));
-//});
-
-//builder.Services.AddHttpClient("EntraIdClient", config =>
-//{
-//    config.BaseAddress = new Uri(builder.Configuration["EntraIdConfiguration:Authority"] ??
-//        throw new InvalidOperationException("Missing configuration value: EntraIdConfiguration:Authority"));
-//});
-
-builder.Services.AddOpenIdConnectAccessTokenManagement();
+builder.Services.AddHttpClient("DestinationsApiClient", config =>
+{
+    config.BaseAddress = new Uri(builder.Configuration["DestinationsApi:Root"] ??
+        throw new InvalidOperationException("Missing configuration value: DestinationsApi:Root"));
+}).AddMicrosoftIdentityAppAuthenticationHandler("DestinationsApiHandler",
+    builder.Configuration.GetSection("DestinationsApi"));
 
 builder.Services.AddHttpClient("ItinerariesApiClient", config =>
 {
-    config.BaseAddress = new Uri(builder.Configuration["ItinerariesApiRoot"] ??
+    config.BaseAddress = new Uri(builder.Configuration["ItinerariesApi:Root"] ??
         throw new InvalidOperationException("Missing configuration value: ItinerariesApiRoot"));
-}).AddUserAccessTokenHandler();
+}).AddMicrosoftIdentityUserAuthenticationHandler("ItinerariesApiHandler",
+    builder.Configuration.GetSection("ItinerariesApi"));
 
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
-}).AddCookie(CookieAuthenticationDefaults.AuthenticationScheme)
-.AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, options =>
-{
-    options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-    options.Authority = builder.Configuration["EntraIdConfiguration:Authority"] ??
-        throw new InvalidOperationException("Missing configuration value EntraIdConfiguration:Authority");
-    options.ClientId = builder.Configuration["EntraIdConfiguration:ClientId"] ??
-        throw new InvalidOperationException("Missing configuration value EntraIdConfiguration:ClientId");
-    options.ClientSecret = builder.Configuration["EntraIdConfiguration:ClientSecret"] ??
-        throw new InvalidOperationException("Missing configuration value EntraIdConfiguration:ClientSecret");
-    options.ResponseType = "code";
-    options.SaveTokens = true;
-    options.MapInboundClaims = false;
-    options.Scope.Add(builder.Configuration["EntraIdConfiguration:ItinerariesApiScope"] ??
-        throw new InvalidOperationException("Missing configuration value EntraIdConfiguration:ItinerariesApiScope"));
-    options.Scope.Add("offline_access");
-    options.TokenValidationParameters.NameClaimType = "name";
-    options.TokenValidationParameters.RoleClaimType = "role";
-});
+// Configure TokenValidationParameters from appsettings
+builder.Services.Configure<Microsoft.AspNetCore.Authentication.OpenIdConnect.OpenIdConnectOptions>(
+    Microsoft.AspNetCore.Authentication.OpenIdConnect.OpenIdConnectDefaults.AuthenticationScheme,
+    options =>
+    {
+        var nameClaimType = builder.Configuration["EntraId:TokenValidationParameters:NameClaimType"];
+        var roleClaimType = builder.Configuration["EntraId:TokenValidationParameters:RoleClaimType"];
+        if (!string.IsNullOrEmpty(nameClaimType))
+        {
+            options.TokenValidationParameters.NameClaimType = nameClaimType;
+        }
+        if (!string.IsNullOrEmpty(roleClaimType))
+        {
+            options.TokenValidationParameters.RoleClaimType = roleClaimType;
+        }
+    });
+
 
 var app = builder.Build();
 

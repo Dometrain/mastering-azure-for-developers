@@ -1,61 +1,43 @@
-using Duende.AccessTokenManagement;
-using Duende.IdentityModel.Client;
-using Microsoft.Extensions.Options;
-using TravelInspiration.Client.Web.ConfigureOptions;
+using Microsoft.Identity.Web;
 using TravelInspiration.Client.Web.DelegatingHandlers;
 using TravelInspiration.Client.Web.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-builder.Services.AddControllersWithViews();
-
+// Add HttpContextAccessor
 builder.Services.AddHttpContextAccessor();
 
+// Register EasyAuthProvider
 builder.Services.AddScoped<IEasyAuthProvider, EasyAuthProvider>();
 builder.Services.AddTransient<EasyAuthTokenRefreshHandler>();
 
-builder.Services.AddClientCredentialsTokenManagement();
+// Add services to the container.
+builder.Services.AddControllersWithViews();
 
-builder.Services.AddSingleton(new DiscoveryCache(
-    builder.Configuration["EntraIdConfiguration:Authority"] ??
-        throw new InvalidOperationException("Missing configuration value EntraIdConfiguration:Authority"),
-    new DiscoveryPolicy { ValidateEndpoints = false }));
+builder.Services.AddAuthentication()
+    .AddMicrosoftIdentityWebApp(builder.Configuration.GetSection("EntraId"))
+    .EnableTokenAcquisitionToCallDownstreamApi()
+    .AddInMemoryTokenCaches();
 
-builder.Services.AddSingleton<IConfigureOptions<ClientCredentialsClient>, 
-    ClientCredentialsClientConfigureOptions>();
+builder.Services.AddHttpClient("DestinationsApiClient", config =>
+{
+    config.BaseAddress = new Uri(builder.Configuration["DestinationsApi:Root"] ??
+        throw new InvalidOperationException("Missing configuration value: DestinationsApi:Root"));
+}).AddMicrosoftIdentityAppAuthenticationHandler("DestinationsApiHandler",
+    builder.Configuration.GetSection("DestinationsApi"));
 
-builder.Services.AddClientCredentialsHttpClient("DestinationsApiClient", 
-    ClientCredentialsClientName.Parse("DestinationsClientCredentialsFlow"), client =>
-    {
-        client.BaseAddress = new Uri(builder.Configuration["DestinationsApiRoot"] ??
-             throw new InvalidOperationException("Missing configuration value: DestinationsApiRoot"));
-    });
-
-builder.Services.AddClientCredentialsHttpClient("ItinerariesApiClient",
-    ClientCredentialsClientName.Parse("ItinerariesClientCredentialsFlow"), client =>
-    {
-        client.BaseAddress = new Uri(builder.Configuration["ItinerariesApiRoot"] ??
-             throw new InvalidOperationException("Missing configuration value: ItinerariesApiRoot"));
-    });
-
-//builder.Services.AddHttpClient("DestinationsApiClient", config =>
-//{
-//    config.BaseAddress = new Uri(builder.Configuration["DestinationsApiRoot"] ??
-//        throw new InvalidOperationException("Missing configuration value: DestinationsApiRoot"));
-//});
+builder.Services.AddHttpClient("ItinerariesApiClient", config =>
+{
+    config.BaseAddress = new Uri(builder.Configuration["ItinerariesApi:Root"] ??
+        throw new InvalidOperationException("Missing configuration value: ItinerariesApiRoot"));
+}).AddMicrosoftIdentityAppAuthenticationHandler("ItinerariesApiHandler",
+    builder.Configuration.GetSection("ItinerariesApi"));
 
 builder.Services.AddHttpClient("UserBasedItinerariesApiClient", config =>
 {
-    config.BaseAddress = new Uri(builder.Configuration["ItinerariesApiRoot"] ??
-        throw new InvalidOperationException("Missing configuration value: ItinerariesApiRoot"));
+    config.BaseAddress = new Uri(builder.Configuration["ItinerariesApi:Root"] ??
+        throw new InvalidOperationException("Missing configuration value: ItinerariesApi:Root"));
 }).AddHttpMessageHandler<EasyAuthTokenRefreshHandler>();
-
-//builder.Services.AddHttpClient("EntraIdClient", config =>
-//{
-//    config.BaseAddress = new Uri(builder.Configuration["EntraIdConfiguration:Authority"] ??
-//        throw new InvalidOperationException("Missing configuration value: EntraIdConfiguration:Authority"));
-//});
 
 var app = builder.Build();
 
@@ -69,6 +51,9 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseRouting();
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapStaticAssets();
 

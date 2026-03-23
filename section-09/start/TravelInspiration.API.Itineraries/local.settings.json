@@ -1,0 +1,11 @@
+{
+  "IsEncrypted": false,
+    "Values": {
+        "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+        "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
+        "KeyVaultUri": "https://appdev-kv-dev-we-i9e5m2.vault.azure.net/"
+    },
+    "ConnectionStrings": {
+        "TravelInspirationDbConnection": "Server=tcp:appdev-sql-dev-we-ti-i9e5m2.database.windows.net,1433;Initial Catalog=appdev-sqldb-dev-we-ti-i9e5m2;Persist Security Info=False;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
+    }
+}

@@ -46,7 +46,7 @@ public class GetItinerariesFunction(ILogger<GetItinerariesFunction> logger,
         string? searchForValue = req.Query["SearchFor"];
 
         var itineraryEntities = await _dbContext.Itineraries
-            .Where(i => i.UserId == userOid && 
+            .Where(i => i.UserId == userOid &&
                         (searchForValue == null ||
                            i.Name.Contains(searchForValue) ||
                            (i.Description != null && i.Description.Contains(searchForValue))))
@@ -63,7 +63,7 @@ public class GetItinerariesFunction(ILogger<GetItinerariesFunction> logger,
 
         return new OkObjectResult(itineraryDtos);
     }
-    
+
     private string? GetUserOidFromEasyAuth(HttpRequest request)
     {
         if (request.Headers.TryGetValue("X-MS-CLIENT-PRINCIPAL-ID", out var principalIdHeader))
@@ -72,5 +72,4 @@ public class GetItinerariesFunction(ILogger<GetItinerariesFunction> logger,
         }
         return null;
     }
-
 }

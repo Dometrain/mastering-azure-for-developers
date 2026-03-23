@@ -1,4 +1,6 @@
 using Azure.Identity;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Identity.Web;
 using TravelInspiration.API.Destinations;
 using TravelInspiration.API.Destinations.Shared.Slices;
 
@@ -11,27 +13,33 @@ builder.Services.AddHttpContextAccessor();
 
 builder.Services.RegisterApplicationServices();
 
-// Alternative: APPLICATIONINSIGHTS_AUTHENTICATION_STRING / Authorization=AAD;ClientId=4eecc25a-7bb2-488d-b031-ff1bef89ba76
+builder.Services.Configure<Microsoft.ApplicationInsights.Extensibility.TelemetryConfiguration>(
+    config =>
+    {
+        config.SetAzureTokenCredential(new DefaultAzureCredential(
+            new DefaultAzureCredentialOptions()
+            {
+                ManagedIdentityClientId = "c687e21e-7519-4ee8-912d-bf952fd55126"
+            }));
+    });
 
-builder.Services.Configure<Microsoft.ApplicationInsights.Extensibility.TelemetryConfiguration>(config =>
-{
-    config.SetAzureTokenCredential(new DefaultAzureCredential(
-        new DefaultAzureCredentialOptions()
-            { ManagedIdentityClientId = "4eecc25a-7bb2-488d-b031-ff1bef89ba76" }));
-});
+// alternative: APPLICATIONINSIGHTS_AUTHENTICATION_STRING
+// with value Authorization=AAD;ClientId=4eecc25a-7bb2-488d-b031-ff1bef89ba76
 
-builder.Services.AddApplicationInsightsTelemetry(new Microsoft.ApplicationInsights.AspNetCore.Extensions.ApplicationInsightsServiceOptions
-{
-    ConnectionString = builder.Configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"]
-});
+builder.Services.AddApplicationInsightsTelemetry(
+    new Microsoft.ApplicationInsights.AspNetCore.Extensions.ApplicationInsightsServiceOptions
+    {
+        ConnectionString = builder.Configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"]
+    });
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("EntraId"));
+
+builder.Services.AddAuthorization();
 
 builder.Services.AddAuthorizationBuilder()
-    .AddPolicy("DestinationsReadRoleIsRequired", policy =>
+  .AddPolicy("DestinationsReadRoleIsRequired", policy =>
         policy.RequireRole("Destinations.Read"));
-
-builder.Services.AddAuthentication()
-    .AddJwtBearer();
-builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
@@ -47,6 +55,9 @@ else
 }
 app.UseStatusCodePages();
  
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.MapSliceEndpoints();
 
 app.Run();

@@ -1,54 +1,28 @@
-using Duende.AccessTokenManagement;
-using Duende.IdentityModel.Client;
-using Microsoft.Extensions.Options;
-using TravelInspiration.Client.Web.ConfigureOptions;
+using Microsoft.Identity.Web;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-builder.Services.AddClientCredentialsTokenManagement();
+builder.Services.AddAuthentication()
+    .AddMicrosoftIdentityWebApp(builder.Configuration.GetSection("EntraId"))
+    .EnableTokenAcquisitionToCallDownstreamApi()
+    .AddInMemoryTokenCaches();
 
-builder.Services.AddSingleton(new DiscoveryCache(
-    builder.Configuration["EntraIdConfiguration:Authority"] ??
-        throw new InvalidOperationException("Missing configuration value EntraIdConfiguration:Authority"),
-    new DiscoveryPolicy { ValidateEndpoints = false }));
+builder.Services.AddHttpClient("DestinationsApiClient", config =>
+{
+    config.BaseAddress = new Uri(builder.Configuration["DestinationsApi:Root"] ??
+        throw new InvalidOperationException("Missing configuration value: DestinationsApi:Root"));
+}).AddMicrosoftIdentityAppAuthenticationHandler("DestinationsApiHandler",
+    builder.Configuration.GetSection("DestinationsApi"));
 
-builder.Services.AddSingleton<IConfigureOptions<ClientCredentialsClient>, 
-    ClientCredentialsClientConfigureOptions>();
-
-builder.Services.AddClientCredentialsHttpClient("DestinationsApiClient", 
-    ClientCredentialsClientName.Parse("DestinationsClientCredentialsFlow"), client =>
-    {
-        client.BaseAddress = new Uri(builder.Configuration["DestinationsApiRoot"] ??
-             throw new InvalidOperationException("Missing configuration value: DestinationsApiRoot"));
-    });
-
-builder.Services.AddClientCredentialsHttpClient("ItinerariesApiClient",
-    ClientCredentialsClientName.Parse("ItinerariesClientCredentialsFlow"), client =>
-    {
-        client.BaseAddress = new Uri(builder.Configuration["ItinerariesApiRoot"] ??
-             throw new InvalidOperationException("Missing configuration value: ItinerariesApiRoot"));
-    });
-
-//builder.Services.AddHttpClient("DestinationsApiClient", config =>
-//{
-//    config.BaseAddress = new Uri(builder.Configuration["DestinationsApiRoot"] ??
-//        throw new InvalidOperationException("Missing configuration value: DestinationsApiRoot"));
-//});
-
-//builder.Services.AddHttpClient("ItinerariesApiClient", config =>
-//{
-//    config.BaseAddress = new Uri(builder.Configuration["ItinerariesApiRoot"] ??
-//        throw new InvalidOperationException("Missing configuration value: ItinerariesApiRoot"));
-//});
-
-//builder.Services.AddHttpClient("EntraIdClient", config =>
-//{
-//    config.BaseAddress = new Uri(builder.Configuration["EntraIdConfiguration:Authority"] ??
-//        throw new InvalidOperationException("Missing configuration value: EntraIdConfiguration:Authority"));
-//});
+builder.Services.AddHttpClient("ItinerariesApiClient", config =>
+{
+    config.BaseAddress = new Uri(builder.Configuration["ItinerariesApi:Root"] ??
+        throw new InvalidOperationException("Missing configuration value: ItinerariesApiRoot"));
+}).AddMicrosoftIdentityAppAuthenticationHandler("ItinerariesApiHandler",
+    builder.Configuration.GetSection("ItinerariesApi"));
 
 var app = builder.Build();
 
@@ -62,6 +36,9 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseRouting();
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapStaticAssets();
 

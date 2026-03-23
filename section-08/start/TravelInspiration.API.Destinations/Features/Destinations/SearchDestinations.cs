@@ -13,12 +13,11 @@ public sealed class SearchDestinations : ISlice
                 IMediator mediator,
                 CancellationToken cancellationToken,
                 ClaimsPrincipal user) =>
-             {
-                 var userClaims = user.Claims;
+             { 
                  return mediator.Send(
                      new SearchDestinationsQuery(searchFor),
                      cancellationToken);
-             }).RequireAuthorization("DestinationsReadRoleIsRequired"); 
+             }).RequireAuthorization("DestinationsReadRoleIsRequired");
     }
 
     public sealed class SearchDestinationsQuery(string? searchFor) : IRequest<IResult>

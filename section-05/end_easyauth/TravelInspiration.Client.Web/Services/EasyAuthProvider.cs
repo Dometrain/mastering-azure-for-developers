@@ -7,25 +7,32 @@ public class EasyAuthProvider(IHttpContextAccessor httpContextAccessor,
 {
     private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
     private readonly ILogger<EasyAuthProvider> _logger = logger;
+
     private HttpContext? HttpContext => _httpContextAccessor.HttpContext;
 
     // Identity-related headers
     public string? ClientPrincipal =>
         HttpContext?.Request.Headers["X-MS-CLIENT-PRINCIPAL"].FirstOrDefault();
+
     public string? ClientPrincipalId =>
         HttpContext?.Request.Headers["X-MS-CLIENT-PRINCIPAL-ID"].FirstOrDefault();
+
     public string? ClientPrincipalName =>
-    HttpContext?.Request.Headers["X-MS-CLIENT-PRINCIPAL-NAME"].FirstOrDefault();
+        HttpContext?.Request.Headers["X-MS-CLIENT-PRINCIPAL-NAME"].FirstOrDefault();
+
     public string? ClientPrincipalIdp =>
         HttpContext?.Request.Headers["X-MS-CLIENT-PRINCIPAL-IDP"].FirstOrDefault();
 
     // Token-related headers
     public string? IdToken =>
         HttpContext?.Request.Headers["X-MS-TOKEN-AAD-ID-TOKEN"].FirstOrDefault();
+
     public string? AccessToken =>
         HttpContext?.Request.Headers["X-MS-TOKEN-AAD-ACCESS-TOKEN"].FirstOrDefault();
+
     public string? ExpiresOn =>
         HttpContext?.Request.Headers["X-MS-TOKEN-AAD-EXPIRES-ON"].FirstOrDefault();
+
     public string? RefreshToken =>
         HttpContext?.Request.Headers["X-MS-TOKEN-AAD-REFRESH-TOKEN"].FirstOrDefault();
 
@@ -36,12 +43,10 @@ public class EasyAuthProvider(IHttpContextAccessor httpContextAccessor,
 
     public string? RawClientPrincipalData
     {
-        get 
+        get
         {
             if (string.IsNullOrEmpty(ClientPrincipal))
-            {
                 return null;
-            }
 
             try
             {
@@ -53,7 +58,6 @@ public class EasyAuthProvider(IHttpContextAccessor httpContextAccessor,
                 _logger.LogWarning(ex, "Failed to parse client principal data");
                 return null;
             }
-
         }
     }
 
@@ -62,9 +66,7 @@ public class EasyAuthProvider(IHttpContextAccessor httpContextAccessor,
         get
         {
             if (string.IsNullOrEmpty(RawClientPrincipalData))
-            {
                 return null;
-            }
 
             try
             {
@@ -77,5 +79,4 @@ public class EasyAuthProvider(IHttpContextAccessor httpContextAccessor,
             }
         }
     }
-
 }
