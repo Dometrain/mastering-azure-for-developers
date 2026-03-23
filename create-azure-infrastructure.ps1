@@ -8,7 +8,7 @@ param(
     [string]$PublisherName = "INPUT-YOUR-OWN", # Used for APIM, replace with your own
     [string]$PublisherEmail = "INPUT-YOUR-OWN", # Used for APIM, replace with your own
     [string]$SqlAdminUser = "kevin", # Used for SQL access, optionally replace this    
-    [string]$SqlAdminPassword = "HRZc8atfjZbrkb2", # Used for SQL access, optionally replace this
+    [string]$SqlAdminPassword = "HreE8atfjZbrkb3", # Used for SQL access, optionally replace this
     [string]$EntraAdminDisplayName = "INPUT-YOUR-OWN", # Replace with your own Entra ID display name
     [string]$EntraAdminObjectId = "INPUT-YOUR-OWN" # Replace with your own Entra ID user object identifier
 )
@@ -42,7 +42,6 @@ $ApplicationInsights = "$Department-appi-$Environment-$RegionShort$UniqueSuffix"
 $ApiManagement = "$Department-apim-$Environment-$RegionShort$UniqueSuffix"
 $AppServicePlan = "$Department-plan-$Environment-$RegionShort-$FunctionalGroup$UniqueSuffix"
 $WebAppClient = "$Department-app-$Environment-$RegionShort-ticlient$UniqueSuffix"
-$WebAppClientJS = "$Department-app-$Environment-$RegionShort-ticlientjs$UniqueSuffix"
 $WebAppDestinationsAPI = "$Department-app-$Environment-$RegionShort-tidestapi$UniqueSuffix"
 $StorageAccount = "$Department`st$Environment$RegionShort$FunctionalGroup$UniqueIdentifier"  # No dash for storage account
 $FunctionApp = "$Department-func-$Environment-$RegionShort-tiitinapi$UniqueSuffix"
@@ -112,10 +111,6 @@ az appservice plan create --name $AppServicePlan --resource-group $ResourceGroup
 Write-Host "Creating client web app: $WebAppClient" -ForegroundColor Blue
 az webapp create --name $WebAppClient --resource-group $ResourceGroupTI --plan $AppServicePlan --runtime "dotnet:9"
 
-# Create frontend client web app for JavaScript-based client 
-Write-Host "Creating JavaScript client web app: $WebAppClientJS" -ForegroundColor Blue
-az webapp create --name $WebAppClientJS --resource-group $ResourceGroupTI --plan $AppServicePlan --runtime "dotnet:9"
-
 # Create destination search API web app
 Write-Host "Creating destinations API web app: $WebAppDestinationsAPI" -ForegroundColor Blue
 az webapp create --name $WebAppDestinationsAPI --resource-group $ResourceGroupTI --plan $AppServicePlan --runtime "dotnet:9"
@@ -156,10 +151,6 @@ $APPINSIGHTS_KEY = az resource show --resource-group $ResourceGroupMain --name $
 # Configure Application Insights for client web app
 Write-Host "Configuring Application Insights for client web app" -ForegroundColor Blue
 az webapp config appsettings set --name $WebAppClient --resource-group $ResourceGroupTI --settings APPLICATIONINSIGHTS_CONNECTION_STRING="InstrumentationKey=$APPINSIGHTS_KEY" ApplicationInsightsAgent_EXTENSION_VERSION="~3"
-
-# Configure Application Insights for JS-based client web app
-Write-Host "Configuring Application Insights for JavaScript client web app" -ForegroundColor Blue
-az webapp config appsettings set --name $WebAppClientJS --resource-group $ResourceGroupTI --settings APPLICATIONINSIGHTS_CONNECTION_STRING="InstrumentationKey=$APPINSIGHTS_KEY" ApplicationInsightsAgent_EXTENSION_VERSION="~3"
 
 # Configure Application Insights for destinations API web app
 Write-Host "Configuring Application Insights for destinations API web app" -ForegroundColor Blue
